@@ -9,22 +9,20 @@ class LicenseError(Exception):
     pass
 
 
-# Import arcpy module
+# Import arcpy modules
 import arcpy
 from arcpy.sa import *
 import os
-import arcview
-import sys
 
 arcpy.env.overwriteOutput = True
 
 
-def inundation_map_builder(cut_line_file, profile, output_shapefile):
+def inundation_map_builder(cut_line_file, profile, output_raster, output_shapefile):
 
     xs_cut_lines = cut_line_file
     profile = profile
     output_shapefile = output_shapefile
-
+    output_raster = output_raster
 
     try:
         if arcpy.CheckExtension("3D") == "Available":
@@ -42,14 +40,10 @@ def inundation_map_builder(cut_line_file, profile, output_shapefile):
             raise LicenseError
 
         # Local variables:
-        cook_thorn__2_ = "D:\GIS\cook_thorn"
-        XSCutlines____ = "XSCutlines...."
-        BoundingPolygonLeveet = "BoundingPolygonLeveet"
         modelbuild = "D:\\LittleCal_Inundations\\TINS\\modelbuildtin"
         modelbuild11 = "D:\\LittleCal_Inundations\\Rasters\\modelbuild11"
         cook_thorn = "D:\GIS\cook_thorn"
-        modelbuild12 = "D:\\LittleCal_Inundations\\Rasters\\modelbuild12"
-        modelbuild13 = "D:\\LittleCal_Inundations\\Rasters\\modelbuild13"
+        modelbuild13 = "D:\\LittleCal_Inundations\\Rasters\\" + output_raster
         mdelbuild1int = "D:\\LittleCal_Inundations\\Rasters\\mdelbuild1int"
         modelbuild1dis_shp = "D:\\LittleCal_Inundations\\Shapefiles\\modelbuild1dis.shp"
         modelbuild1_shp = "D:\\LittleCal_Inundations\\Shapefiles\\" + output_shapefile
@@ -116,18 +110,12 @@ def inundation_map_builder(cut_line_file, profile, output_shapefile):
 
 if __name__ == '__main__':
     dataframe_dir = "D:\\LittleCal_Inundations\\DataFrames\\"
-    dataframe_list = ["500NoLevee\\500NoLevee.gdb", "100NoLevee\\100NoLevee.gdb", "50NoLevee\\50NoLevee.gdb"]
-    shapefile_names = ["500NoLevee", "100NoLevee", "50NoLevee"]
-    cutline_path = "\\RasResults\\XSCutlines"
+    plan_list = ["500NoLevee"]
+    cutline_path = "RasResults\\XSCutlines"
     profile_list = ['P004']
-    for dataframe in range(len(dataframe_list)):
-        input_xs = dataframe_dir + dataframe_list[dataframe] + cutline_path
+    for plan_index in range(len(plan_list)):
+        plan = plan_list[plan_index]
+        geodatabase = plan + "\\" + plan + ".gdb"
+        input_xs = os.path.join(dataframe_dir, geodatabase, cutline_path)
         for profile in profile_list:
-            inundation_map_builder(input_xs, profile, (shapefile_names[dataframe]+profile+'.shp'))
-
-
-    #input_xs = "D:\LittleCal_Inundations\DataFrames\ArcPyTesting\ArcPyTesting.gdb\RasResults\XSCutlines"
-    #profile = 'P002'
-    #output_file = 'arcpytest.shp'
-
-    #inundation_map_builder(input_xs, profile, output_file)
+            inundation_map_builder(input_xs, profile, (plan + profile[0] + profile[3]), (plan + profile + '.shp'))
